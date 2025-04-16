@@ -37,8 +37,8 @@ def extract_frames_from_video(video_path, output_dir, frame_skip=1):
 
 if __name__ == "__main__":
     
-    video_folder = "data/videos/*.mp4"
-    output_folder = "images"
+    video_folder = "data/videos_v2/*.mp4"
+    output_folder = "images_v2"
     frames_to_skip = 20
 
     # Para sumar los frames extraidos

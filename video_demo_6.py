@@ -9,31 +9,32 @@ from libs.utils import (define_roi,
                         get_gpu_device)# Added load_roi_data
 
 
-# from arduino.sensor import ArduinoController
+from arduino.sensor import ArduinoController
 from libs.core import CoreDetector
 
 
 PUERTO = 'COM3'
 
+print(f"DEVICE: {get_gpu_device()}")
 GLOBAL_RESOLUTION = (640, 480)
 THRESHOLD = 0.3
 DEVICE = get_gpu_device()
 # VIDEO_SOURCE = "./video_prueba_1.mp4"
-VIDEO_SOURCE = "./train/data/videos/video_oficial.mp4"
+VIDEO_SOURCE = "./train/data/videos_v1/video_oficial.mp4"
 
 # Modelo de detección
 # best_11n.pt es el modelo de detección  mas pequeño (n de nano)
 # best_11s.pt es el modelo de detección mas grande (s de small)
 
 detector = CoreDetector(
-    model_path="./train/best_11s.pt"
+    model_path="./train/best_ball_yolo11n.pt"
 )
 
-# controlador = ArduinoController(port=PUERTO)
+controlador = ArduinoController(port=PUERTO, baud_rate=9600, timeout=1)
 
-# if not controlador.connect():
-#     print("No se pudo establecer la conexión. Saliendo. :X")
-#     exit()
+if not controlador.connect():
+    print("No se pudo establecer la conexión. Saliendo. :X")
+    exit()
 
 
 # Función principal
@@ -100,10 +101,11 @@ def main():
             # Reiniciar el video cuando llegue al final
             video.set(cv2.CAP_PROP_POS_FRAMES, 0)
             continue
-    
+            
+        print(f"DEVICE: {get_gpu_device()}")
+
         # Redimensionar el frame a GLOBAL_RESOLUTION
         frame = cv2.resize(frame, GLOBAL_RESOLUTION)
-        
         
         # Aplicar máscara ROI al frame
         masked_frame = cv2.bitwise_and(frame, frame, mask=roi_mask)
@@ -158,21 +160,21 @@ def main():
     cv2.destroyAllWindows()
     
     # Desconectar el Arduino
-    # controlador.disconnect() # Commented out as controlador is commented
+    controlador.disconnect() # Commented out as controlador is commented
 
 def sent_to_arduino(zone: str,):
     if zone == "IZQUIERDA":
-        # controlador.move_to_sensor(1)
-        # controlador.move_to_sensor(2)
-        # controlador.move_to_sensor(3)
+        controlador.move_to_sensor(1)
+        controlador.move_to_sensor(2)
+        controlador.move_to_sensor(3)
         print("Enviando zona IZQUIERDA al Arduino")
     elif zone == "CENTRO":
-        # controlador.move_to_sensor(4)
+        controlador.move_to_sensor(4)
         print("Enviando zona CENTRO al Arduino")
     elif zone == "DERECHA":
-        # controlador.move_to_sensor(5)
-        # controlador.move_to_sensor(6)
-        # controlador.move_to_sensor(7)
+        controlador.move_to_sensor(5)
+        controlador.move_to_sensor(6)
+        controlador.move_to_sensor(7)
         print("Enviando zona DERECHA al Arduino")
     print(f"Enviando zona {zone} al Arduino")
     # Aquí puedes agregar la lógica para enviar la zona al Arduino
